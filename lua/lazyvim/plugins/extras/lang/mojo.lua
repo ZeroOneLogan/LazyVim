@@ -17,6 +17,8 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        -- Uses default configuration from lspconfig
+        -- The mojo-lsp-server must be installed and in PATH
         mojo = {},
       },
     },
