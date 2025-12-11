@@ -47,6 +47,7 @@ function M.check()
   local tsok, health = pcall(LazyVim.treesitter.check)
   if not tsok then
     error("Failed to check treesitter health")
+    -- Early return on error
     return
   end
   local keys = vim.tbl_keys(health) ---@type string[]

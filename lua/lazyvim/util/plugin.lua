@@ -74,7 +74,7 @@ function M.extra_idx(name)
     return nil
   end
   local ok, Config = pcall(require, "lazy.core.config")
-  if not ok or not Config or not Config.spec or not Config.spec.modules then
+  if not ok or not Config.spec or not Config.spec.modules then
     return nil
   end
   for i, extra in ipairs(Config.spec.modules) do

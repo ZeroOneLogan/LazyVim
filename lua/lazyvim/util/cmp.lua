@@ -33,7 +33,9 @@ function M.map(actions, fallback)
     for _, name in ipairs(actions) do
       if type(name) == "string" and M.actions[name] then
         local ok, result = pcall(M.actions[name])
-        if ok and result then
+        if not ok then
+          LazyVim.warn(("CMP action '%s' failed: %s"):format(name, result))
+        elseif result then
           return true
         end
       end

@@ -45,7 +45,7 @@ function M.get_plugin(name)
     return nil
   end
   local ok, config = pcall(require, "lazy.core.config")
-  if not ok then
+  if not ok or not config.spec or not config.spec.plugins then
     return nil
   end
   return config.spec.plugins[name]
@@ -132,7 +132,7 @@ function M.extend(t, key, values)
   for i = 1, #keys do
     local k = keys[i]
     t[k] = t[k] or {}
-    if type(t) ~= "table" then
+    if type(t[k]) ~= "table" then
       return nil
     end
     t = t[k]

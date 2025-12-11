@@ -3,7 +3,7 @@ local M = {}
 
 -- taken from MiniExtra.gen_ai_spec.buffer
 ---@param ai_type string The type of text object ("i" for inside, "a" for around)
----@return table Region specification with from and to positions
+---@return {from: {line: number, col: number}, to?: {line: number, col: number}} Region specification with from and to positions
 function M.ai_buffer(ai_type)
   if type(ai_type) ~= "string" then
     return { from = { line = 1, col = 1 } }

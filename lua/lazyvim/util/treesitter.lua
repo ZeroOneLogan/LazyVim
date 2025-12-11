@@ -9,7 +9,7 @@ function M.get_installed(update)
   if update then
     M._installed, M._queries = {}, {}
     local ok, ts = pcall(require, "nvim-treesitter")
-    if ok and ts.get_installed then
+    if ok and type(ts.get_installed) == "function" then
       for _, lang in ipairs(ts.get_installed("parsers")) do
         M._installed[lang] = true
       end
