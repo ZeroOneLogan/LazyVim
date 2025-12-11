@@ -83,6 +83,12 @@ end
 ---@param buf? number
 function M.enabled(buf)
   buf = (buf == nil or buf == 0) and vim.api.nvim_get_current_buf() or buf
+  
+  -- Validate buffer
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return false
+  end
+  
   local gaf = vim.g.autoformat
   local baf = vim.b[buf].autoformat
 

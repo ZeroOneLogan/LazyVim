@@ -36,7 +36,11 @@ function M.check()
   end
 
   start("LazyVim nvim-treesitter")
-  local tsok, health = LazyVim.treesitter.check()
+  local tsok, health = pcall(LazyVim.treesitter.check)
+  if not tsok then
+    error("Failed to check treesitter health")
+    return
+  end
   local keys = vim.tbl_keys(health) ---@type string[]
   table.sort(keys)
   for _, k in pairs(keys) do
