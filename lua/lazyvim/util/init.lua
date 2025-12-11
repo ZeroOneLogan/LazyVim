@@ -41,12 +41,22 @@ end
 
 ---@param name string
 function M.get_plugin(name)
-  return require("lazy.core.config").spec.plugins[name]
+  if not name or type(name) ~= "string" or name == "" then
+    return nil
+  end
+  local ok, config = pcall(require, "lazy.core.config")
+  if not ok or not config.spec or not config.spec.plugins then
+    return nil
+  end
+  return config.spec.plugins[name]
 end
 
 ---@param name string
 ---@param path string?
 function M.get_plugin_path(name, path)
+  if not name or type(name) ~= "string" or name == "" then
+    return nil
+  end
   local plugin = M.get_plugin(name)
   path = path and "/" .. path or ""
   return plugin and (plugin.dir .. path)
@@ -54,6 +64,9 @@ end
 
 ---@param plugin string
 function M.has(plugin)
+  if not plugin or type(plugin) ~= "string" or plugin == "" then
+    return false
+  end
   return M.get_plugin(plugin) ~= nil
 end
 
@@ -105,12 +118,22 @@ end
 ---@param values T[]
 ---@return T[]?
 function M.extend(t, key, values)
+  if type(t) ~= "table" then
+    return nil
+  end
+  if not key or type(key) ~= "string" or key == "" then
+    return nil
+  end
+  if type(values) ~= "table" then
+    return nil
+  end
+  
   local keys = vim.split(key, ".", { plain = true })
   for i = 1, #keys do
     local k = keys[i]
     t[k] = t[k] or {}
-    if type(t) ~= "table" then
-      return
+    if type(t[k]) ~= "table" then
+      return nil
     end
     t = t[k]
   end
@@ -119,11 +142,17 @@ end
 
 ---@param name string
 function M.opts(name)
+  if not name or type(name) ~= "string" or name == "" then
+    return {}
+  end
   local plugin = M.get_plugin(name)
   if not plugin then
     return {}
   end
-  local Plugin = require("lazy.core.plugin")
+  local ok, Plugin = pcall(require, "lazy.core.plugin")
+  if not ok then
+    return {}
+  end
   return Plugin.values(plugin, "opts", false)
 end
 
@@ -229,6 +258,9 @@ end
 ---@param list T[]
 ---@return T[]
 function M.dedup(list)
+  if type(list) ~= "table" then
+    return {}
+  end
   local ret = {}
   local seen = {}
   for _, v in ipairs(list) do

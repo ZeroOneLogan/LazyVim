@@ -45,11 +45,17 @@ function M.format(opts)
   local ok, conform = pcall(require, "conform")
   -- use conform for formatting with LSP when available,
   -- since it has better format diffing
-  if ok then
+  if ok and conform then
     opts.formatters = {}
-    conform.format(opts)
+    local success, err = pcall(conform.format, opts)
+    if not success and err then
+      LazyVim.error(("Formatting failed: %s"):format(err), { title = "LSP Format" })
+    end
   else
-    vim.lsp.buf.format(opts)
+    local success, err = pcall(vim.lsp.buf.format, opts)
+    if not success and err then
+      LazyVim.error(("Formatting failed: %s"):format(err), { title = "LSP Format" })
+    end
   end
 end
 

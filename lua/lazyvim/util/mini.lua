@@ -2,7 +2,13 @@
 local M = {}
 
 -- taken from MiniExtra.gen_ai_spec.buffer
+---@param ai_type string The type of text object ("i" for inside, "a" for around)
+---@return {from: {line: number, col: number}, to?: {line: number, col: number}} Region specification with from and to positions
 function M.ai_buffer(ai_type)
+  if type(ai_type) ~= "string" then
+    return { from = { line = 1, col = 1 } }
+  end
+  
   local start_line, end_line = 1, vim.fn.line("$")
   if ai_type == "i" then
     -- Skip first and last blank lines for `i` textobject
@@ -19,8 +25,13 @@ function M.ai_buffer(ai_type)
 end
 
 -- register all text objects with which-key
----@param opts table
+---@param opts table Configuration options with optional mappings field
 function M.ai_whichkey(opts)
+  if type(opts) ~= "table" then
+    LazyVim.error("LazyVim.mini.ai_whichkey: opts must be a table")
+    return
+  end
+  
   local objects = {
     { " ", desc = "whitespace" },
     { '"', desc = '" string' },

@@ -31,12 +31,25 @@ function M.check()
     if found then
       ok(("`%s` is installed"):format(name))
     else
-      warn(("`%s` is not installed"):format(name))
+      local suggestion = ""
+      if name == "rg" then
+        suggestion = " (Install with: brew install ripgrep / apt install ripgrep / choco install ripgrep)"
+      elseif name == "lazygit" then
+        suggestion = " (Install with: brew install lazygit / apt install lazygit / choco install lazygit)"
+      elseif name == "fzf" then
+        suggestion = " (Install with: brew install fzf / apt install fzf / choco install fzf)"
+      end
+      warn(("`%s` is not installed%s"):format(name, suggestion))
     end
   end
 
   start("LazyVim nvim-treesitter")
-  local tsok, health = LazyVim.treesitter.check()
+  local tsok, health = pcall(LazyVim.treesitter.check)
+  if not tsok then
+    error("Failed to check treesitter health")
+    -- Early return on error
+    return
+  end
   local keys = vim.tbl_keys(health) ---@type string[]
   table.sort(keys)
   for _, k in pairs(keys) do

@@ -67,7 +67,13 @@ function M.detectors.pattern(buf, patterns)
 end
 
 function M.bufpath(buf)
-  return M.realpath(vim.api.nvim_buf_get_name(assert(buf)))
+  if not buf or buf == 0 then
+    buf = vim.api.nvim_get_current_buf()
+  end
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return nil
+  end
+  return M.realpath(vim.api.nvim_buf_get_name(buf))
 end
 
 function M.cwd()
@@ -192,6 +198,9 @@ end
 
 function M.git()
   local root = M.get()
+  if not root then
+    return vim.uv.cwd()
+  end
   local git_root = vim.fs.find(".git", { path = root, upward = true })[1]
   local ret = git_root and vim.fn.fnamemodify(git_root, ":h") or root
   return ret

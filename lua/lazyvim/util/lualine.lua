@@ -4,6 +4,11 @@ local M = {}
 ---@param icon string
 ---@param status fun(): nil|"ok"|"error"|"pending"
 function M.status(icon, status)
+  if type(icon) ~= "string" or type(status) ~= "function" then
+    LazyVim.error("LazyVim.lualine.status: invalid arguments")
+    return {}
+  end
+  
   local colors = {
     ok = "Special",
     error = "DiagnosticError",
@@ -14,10 +19,13 @@ function M.status(icon, status)
       return icon
     end,
     cond = function()
-      return status() ~= nil
+      local ok, result = pcall(status)
+      return ok and result ~= nil
     end,
     color = function()
-      return { fg = Snacks.util.color(colors[status()] or colors.ok) }
+      local ok, result = pcall(status)
+      local color_name = ok and result and colors[result] or colors.ok
+      return { fg = Snacks.util.color(color_name) }
     end,
   }
 end

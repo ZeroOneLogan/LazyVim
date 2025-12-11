@@ -70,12 +70,19 @@ function M.setup()
 end
 
 function M.extra_idx(name)
-  local Config = require("lazy.core.config")
+  if not name or type(name) ~= "string" or name == "" then
+    return nil
+  end
+  local ok, Config = pcall(require, "lazy.core.config")
+  if not ok or not Config.spec or not Config.spec.modules then
+    return nil
+  end
   for i, extra in ipairs(Config.spec.modules) do
     if extra == "lazyvim.plugins.extras." .. name then
       return i
     end
   end
+  return nil
 end
 
 function M.lazy_file()

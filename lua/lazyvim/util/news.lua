@@ -2,11 +2,14 @@
 local M = {}
 
 function M.hash(file)
-  local stat = vim.uv.fs_stat(file)
-  if not stat then
-    return
+  if not file or type(file) ~= "string" or file == "" then
+    return nil
   end
-  return stat.size .. ""
+  local stat = vim.uv.fs_stat(file)
+  if not stat or not stat.size then
+    return nil
+  end
+  return tostring(stat.size)
 end
 
 function M.setup()
