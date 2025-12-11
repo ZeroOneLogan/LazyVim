@@ -8,8 +8,11 @@ M._queries = {} ---@type table<string,boolean>
 function M.get_installed(update)
   if update then
     M._installed, M._queries = {}, {}
-    for _, lang in ipairs(require("nvim-treesitter").get_installed("parsers")) do
-      M._installed[lang] = true
+    local ok, ts = pcall(require, "nvim-treesitter")
+    if ok and ts and ts.get_installed then
+      for _, lang in ipairs(ts.get_installed("parsers")) do
+        M._installed[lang] = true
+      end
     end
   end
   return M._installed or {}
@@ -18,9 +21,13 @@ end
 ---@param lang string
 ---@param query string
 function M.have_query(lang, query)
+  if not lang or not query or type(lang) ~= "string" or type(query) ~= "string" then
+    return false
+  end
   local key = lang .. ":" .. query
   if M._queries[key] == nil then
-    M._queries[key] = vim.treesitter.query.get(lang, query) ~= nil
+    local ok, result = pcall(vim.treesitter.query.get, lang, query)
+    M._queries[key] = ok and result ~= nil
   end
   return M._queries[key]
 end

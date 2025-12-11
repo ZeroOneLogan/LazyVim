@@ -44,11 +44,33 @@ function M.encode(value)
 end
 
 function M.save()
+  if not LazyVim.config or not LazyVim.config.json then
+    LazyVim.error("LazyVim config or json not initialized")
+    return false
+  end
+  
   LazyVim.config.json.data.version = LazyVim.config.json.version
-  local f = io.open(LazyVim.config.json.path, "w")
+  local path = LazyVim.config.json.path
+  
+  if not path or type(path) ~= "string" or path == "" then
+    LazyVim.error("Invalid json path")
+    return false
+  end
+  
+  local ok, encoded = pcall(LazyVim.json.encode, LazyVim.config.json.data)
+  if not ok or not encoded then
+    LazyVim.error("Failed to encode json data")
+    return false
+  end
+  
+  local f = io.open(path, "w")
   if f then
-    f:write(LazyVim.json.encode(LazyVim.config.json.data))
+    f:write(encoded)
     f:close()
+    return true
+  else
+    LazyVim.error(("Failed to open file for writing: %s"):format(path))
+    return false
   end
 end
 
