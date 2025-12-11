@@ -23,11 +23,17 @@ M.actions = {
 ---@param actions string[]
 ---@param fallback? string|fun()
 function M.map(actions, fallback)
+  if type(actions) ~= "table" then
+    return function()
+      return type(fallback) == "function" and fallback() or fallback
+    end
+  end
+  
   return function()
     for _, name in ipairs(actions) do
-      if M.actions[name] then
-        local ret = M.actions[name]()
-        if ret then
+      if type(name) == "string" and M.actions[name] then
+        local ok, ret = pcall(M.actions[name])
+        if ok and ret then
           return true
         end
       end
@@ -72,9 +78,22 @@ end
 
 ---@param entry cmp.Entry
 function M.auto_brackets(entry)
-  local cmp = require("cmp")
+  if not entry then
+    return
+  end
+  
+  local ok, cmp = pcall(require, "cmp")
+  if not ok or not cmp then
+    return
+  end
+  
   local Kind = cmp.lsp.CompletionItemKind
   local item = entry:get_completion_item()
+  
+  if not item or not item.kind then
+    return
+  end
+  
   if vim.tbl_contains({ Kind.Function, Kind.Method }, item.kind) then
     local cursor = vim.api.nvim_win_get_cursor(0)
     local prev_char = vim.api.nvim_buf_get_text(0, cursor[1] - 1, cursor[2], cursor[1] - 1, cursor[2] + 1, {})[1]

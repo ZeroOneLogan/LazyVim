@@ -3,6 +3,11 @@ local M = {}
 
 ---@param shell? string
 function M.setup(shell)
+  if shell and type(shell) ~= "string" then
+    LazyVim.error("LazyVim.terminal.setup: shell must be a string or nil")
+    return false
+  end
+  
   vim.o.shell = shell or vim.o.shell
 
   -- Special handling for pwsh
@@ -13,7 +18,8 @@ function M.setup(shell)
     elseif vim.fn.executable("powershell") == 1 then
       vim.o.shell = "powershell"
     else
-      return LazyVim.error("No powershell executable found")
+      LazyVim.error("No powershell executable found")
+      return false
     end
 
     -- Setting shell command flags
@@ -30,6 +36,8 @@ function M.setup(shell)
     vim.o.shellquote = ""
     vim.o.shellxquote = ""
   end
+  
+  return true
 end
 
 return M

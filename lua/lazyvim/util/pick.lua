@@ -22,6 +22,11 @@ M.picker = nil
 
 ---@param picker LazyPicker
 function M.register(picker)
+  if not picker or type(picker) ~= "table" or not picker.name then
+    LazyVim.error("LazyVim.pick: invalid picker")
+    return false
+  end
+  
   -- this only happens when using :LazyExtras
   -- so allow to get the full spec
   if vim.v.vim_did_enter == 1 then
