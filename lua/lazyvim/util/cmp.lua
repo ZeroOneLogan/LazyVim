@@ -32,8 +32,8 @@ function M.map(actions, fallback)
   return function()
     for _, name in ipairs(actions) do
       if type(name) == "string" and M.actions[name] then
-        local ok, ret = pcall(M.actions[name])
-        if ok and ret then
+        local ok, result = pcall(M.actions[name])
+        if ok and result then
           return true
         end
       end

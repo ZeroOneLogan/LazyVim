@@ -57,15 +57,15 @@ function M.save()
     return false
   end
   
-  local ok, encoded = pcall(LazyVim.json.encode, LazyVim.config.json.data)
-  if not ok or not encoded then
-    LazyVim.error("Failed to encode json data")
+  local ok, encoded_or_err = pcall(LazyVim.json.encode, LazyVim.config.json.data)
+  if not ok then
+    LazyVim.error(("Failed to encode json data: %s"):format(encoded_or_err))
     return false
   end
   
   local f = io.open(path, "w")
   if f then
-    f:write(encoded)
+    f:write(encoded_or_err)
     f:close()
     return true
   else

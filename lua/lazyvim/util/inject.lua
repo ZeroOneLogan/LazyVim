@@ -24,6 +24,7 @@ function M.args(fn, wrapper)
       LazyVim.error(("LazyVim.inject.args: wrapper error: %s"):format(result))
       return fn(...)
     end
+    -- If wrapper succeeded, check its return value
     if result == false then
       return
     end
